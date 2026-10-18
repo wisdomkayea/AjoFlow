@@ -12,17 +12,28 @@ import { apiFetch } from "@/lib/api-client";
 import { createClient } from "@/lib/client";
 import { roleHomePath } from "@/lib/role-routes";
 import type { Role } from "@/types";
+import KreddtIcon from "../../../../assets/icons/Kreddt-icon.svg";
+import Image from "next/image";
 
 const ROLES = [
-  { value: "ADMIN", label: "Group admin", hint: "I run an Ajo/Esusu group" },
-  { value: "MEMBER", label: "Member", hint: "I contribute to a group" },
+  // { value: "ADMIN", label: "Group admin", hint: "I run an Ajo/Esusu group" },
+  // { value: "MEMBER", label: "Member", hint: "I contribute to a group" },
   { value: "VENDOR", label: "Vendor", hint: "I sell on installments" },
-  { value: "CUSTOMER", label: "Customer", hint: "I'm paying for something in installments" }
+  {
+    value: "CUSTOMER",
+    label: "Customer",
+    hint: "I'm paying for something in installments",
+  },
 ];
 
 export default function SignupPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "ADMIN" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "ADMIN",
+  });
   const [loading, setLoading] = useState(false);
   const { success, presentError } = useNotifier();
 
@@ -30,10 +41,13 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await apiFetch<{ user: { role: Role } }>("/api/auth/signup", {
-        method: "POST",
-        body: JSON.stringify(form)
-      });
+      const result = await apiFetch<{ user: { role: Role } }>(
+        "/api/auth/signup",
+        {
+          method: "POST",
+          body: JSON.stringify(form),
+        },
+      );
 
       try {
         const supabase = createClient();
@@ -43,9 +57,9 @@ export default function SignupPage() {
           options: {
             data: {
               name: form.name,
-              role: form.role
-            }
-          }
+              role: form.role,
+            },
+          },
         });
       } catch {
         // The local account is already created by the API route; Supabase is an optional companion session.
@@ -64,12 +78,23 @@ export default function SignupPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-8 sm:py-12">
       <div className="w-full max-w-md">
-       <Link href="/">
-            <div className="mb-8 flex items-center justify-center gap-2">
-            <Landmark className="h-5 w-5 text-forest-600" />
-            <span className="font-display italic text-xl">AjoFlow</span>
-            </div>  
-          </Link>
+        <Link href="/">
+
+        <div className="mb-8 flex items-center justify-center gap-2">
+          {/*   <Landmark className="h-5 w-5 text-forest-600" />
+            <span className="font-display italic text-xl">Kreddt</span>
+           */}
+
+          <div>
+            <Image src={KreddtIcon} alt="" width={45} height={45} />
+          </div>
+          <div className="flex flex-col items-center ">
+           <span className="font-display text-sm font-semibold text-ink">
+            Kreddt
+           </span>
+          </div>
+        </div>
+        </Link>
         <Card className="p-5 sm:p-6">
           <h1 className="font-display text-2xl">Create your account</h1>
           <p className="mt-1 text-sm text-ink/50">Set up in under a minute.</p>
@@ -106,7 +131,9 @@ export default function SignupPage() {
               />
             </div>
             <div>
-              <p className="block text-xs font-medium tracking-wide text-ink/50 mb-1.5">I am a…</p>
+              <p className="block text-xs font-medium tracking-wide text-ink/50 mb-1.5">
+                I am a…
+              </p>
               <div className="grid grid-cols-2 gap-2">
                 {ROLES.map((r) => (
                   <button
@@ -120,7 +147,9 @@ export default function SignupPage() {
                     }`}
                   >
                     <span className="block font-medium">{r.label}</span>
-                    <span className="block text-[11px] opacity-70">{r.hint}</span>
+                    <span className="block text-[11px] opacity-70">
+                      {r.hint}
+                    </span>
                   </button>
                 ))}
               </div>

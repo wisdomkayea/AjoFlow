@@ -12,6 +12,8 @@ import { apiFetch } from "@/lib/api-client";
 import { createClient } from "@/lib/client";
 import { roleHomePath } from "@/lib/role-routes";
 import type { Role } from "@/types";
+import KreddtIcon from "../../../../assets/icons/Kreddt-icon.svg";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,16 +25,19 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await apiFetch<{ user: { role: Role } }>("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify(form)
-      });
+      const result = await apiFetch<{ user: { role: Role } }>(
+        "/api/auth/login",
+        {
+          method: "POST",
+          body: JSON.stringify(form),
+        },
+      );
 
       try {
         const supabase = createClient();
         await supabase.auth.signInWithPassword({
           email: form.email,
-          password: form.password
+          password: form.password,
         });
       } catch {
         // Keep the existing JWT-based login working even if Supabase auth is not configured for this user.
@@ -51,14 +56,23 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-8 sm:py-12">
       <div className="w-full max-w-md">
-          <Link href="/">
-            <div className="mb-8 flex items-center justify-center gap-2">
+        <Link href="/">
+          {/* <div className="mb-8 flex items-center justify-center gap-2">
             <Landmark className="h-5 w-5 text-forest-600" />
-            <span className="font-display italic text-xl">AjoFlow</span>
-            </div>  
-          </Link>
-          
-      
+            <span className="font-display italic text-xl">Kreddt</span>
+          </div> */}
+          <div className="mb-8 flex items-center justify-center gap-2">
+            <div>
+              <Image src={KreddtIcon} alt="" width={45} height={45} />
+            </div>
+            <div className="flex flex-col items-center ">
+              <span className="font-display text-sm font-semibold text-ink">
+                Kreddt
+              </span>
+            </div>
+          </div>
+        </Link>
+
         <Card className="p-5 sm:p-6">
           <h1 className="font-display text-2xl">Welcome back</h1>
           <p className="mt-1 text-sm text-ink/50">Log in to your workspace.</p>
@@ -90,7 +104,7 @@ export default function LoginPage() {
           </form>
         </Card>
         <p className="mt-4 text-center text-sm text-ink/50">
-          New to AjoFlow?{" "}
+          New to Kreddt?{" "}
           <Link href="/signup" className="font-medium text-forest-700">
             Create an account
           </Link>

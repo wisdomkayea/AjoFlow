@@ -1,7 +1,7 @@
-# AjoFlow
+# Kreddt
 
 A production-structured Next.js 14 + Prisma app for managing Ajo/Esusu contribution
-groups and vendor installment ("pay small small") plans, built from the AjoFlow PRD.
+groups and vendor installment ("pay small small") plans, built from the Kreddt PRD.
 
 ## Stack
 
@@ -9,6 +9,12 @@ groups and vendor installment ("pay small small") plans, built from the AjoFlow 
 - **Backend:** Next.js API routes, service-layer architecture
 - **Database:** PostgreSQL via Prisma ORM
 - **Auth:** Custom JWT session cookie (httpOnly), bcrypt password hashing, RBAC middleware
+
+## Frontend design rule
+
+All new frontend development, redesigns, and component restructures must follow
+[`FRONTEND_DESIGN_SKILLS.md`](./FRONTEND_DESIGN_SKILLS.md) as the single source
+of UI/UX implementation rules for the Vendor Hub experience.
 
 ## Folder structure
 
@@ -34,11 +40,13 @@ prisma/
 ## Getting started
 
 1. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Configure environment**
+
    ```bash
    cp .env.example .env
    # then edit DATABASE_URL to point at your Postgres instance
@@ -46,6 +54,7 @@ prisma/
    ```
 
 3. **Set up the database**
+
    ```bash
    npx prisma migrate dev --name init
    npm run seed   # optional demo data, password123 for every seeded account
@@ -57,14 +66,36 @@ prisma/
    ```
    Visit http://localhost:3000
 
+## Vendor Hub DB checklist
+
+Run this before testing Vendor Hub pages to catch schema drift and missing tables/columns:
+
+```bash
+npm run db:check
+```
+
+This verifies:
+
+- Required tables (`User`, `Product`, `Installment`, `Payment`, `WalletWithdrawal`, `ProductPackage`, `ProductPackageItem`, `VendorPolicyTemplate`, `AuditLog`)
+- Required Installment policy columns
+- Required indexes/foreign keys
+- Required migrations (`0006_policy_templates`, `0007_policy_schema_repair`)
+- Basic role data presence (`VENDOR`, `CUSTOMER`)
+
+If connectivity fails:
+
+- Set `DATABASE_URL` to the Supabase pooler URL (usually `:6543`, with `sslmode=require`).
+- Set `DIRECT_URL` to session mode URL (usually `:5432`, with `sslmode=require`).
+- Keep `PRISMA_USE_DIRECT_URL="false"` unless you explicitly need direct connection mode.
+
 ## Demo accounts (after `npm run seed`)
 
-| Role     | Email                  | Password    |
-|----------|-------------------------|-------------|
-| Admin    | admin@ajoflow.dev       | password123 |
-| Member   | amaka@ajoflow.dev       | password123 |
-| Vendor   | vendor@ajoflow.dev      | password123 |
-| Customer | customer@ajoflow.dev    | password123 |
+| Role     | Email               | Password    |
+| -------- | ------------------- | ----------- |
+| Admin    | admin@kreddt.dev    | password123 |
+| Member   | amaka@kreddt.dev    | password123 |
+| Vendor   | vendor@kreddt.dev   | password123 |
+| Customer | customer@kreddt.dev | password123 |
 
 ## Business rules enforced in the service layer
 

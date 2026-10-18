@@ -7,47 +7,78 @@ async function main() {
   const password = await bcrypt.hash("password123", 12);
 
   const admin = await prisma.user.upsert({
-    where: { email: "admin@ajoflow.dev" },
+    where: { email: "admin@kreddt.dev" },
     update: {
       name: "Ngozi Admin",
       role: "ADMIN",
-      passwordHash: password
+      passwordHash: password,
     },
-    create: { name: "Ngozi Admin", email: "admin@ajoflow.dev", passwordHash: password, role: "ADMIN" }
+    create: {
+      name: "Ngozi Admin",
+      email: "admin@kreddt.dev",
+      passwordHash: password,
+      role: "ADMIN",
+    },
   });
 
   const members = await Promise.all(
-    ["Amaka", "Bola", "Collins", "Frank", "Richard", "Justin", "Chidi", "Efe", "Grace", "Kingsley"].map((name, i) =>
+    [
+      "Amaka",
+      "Bola",
+      "Collins",
+      "Frank",
+      "Richard",
+      "Justin",
+      "Chidi",
+      "Efe",
+      "Grace",
+      "Kingsley",
+    ].map((name, i) =>
       prisma.user.upsert({
-        where: { email: `${name.toLowerCase()}@ajoflow.dev` },
+        where: { email: `${name.toLowerCase()}@kreddt.dev` },
         update: {
           name,
           role: "MEMBER",
-          passwordHash: password
+          passwordHash: password,
         },
-        create: { name, email: `${name.toLowerCase()}@ajoflow.dev`, passwordHash: password, role: "MEMBER" }
-      })
-    )
+        create: {
+          name,
+          email: `${name.toLowerCase()}@kreddt.dev`,
+          passwordHash: password,
+          role: "MEMBER",
+        },
+      }),
+    ),
   );
 
   const vendor = await prisma.user.upsert({
-    where: { email: "vendor@ajoflow.dev" },
+    where: { email: "vendor@kreddt.dev" },
     update: {
       name: "Tunde Vendor",
       role: "VENDOR",
-      passwordHash: password
+      passwordHash: password,
     },
-    create: { name: "Tunde Vendor", email: "vendor@ajoflow.dev", passwordHash: password, role: "VENDOR" }
+    create: {
+      name: "Tunde Vendor",
+      email: "vendor@kreddt.dev",
+      passwordHash: password,
+      role: "VENDOR",
+    },
   });
 
   const customer = await prisma.user.upsert({
-    where: { email: "customer@ajoflow.dev" },
+    where: { email: "customer@kreddt.dev" },
     update: {
       name: "Sade Customer",
       role: "CUSTOMER",
-      passwordHash: password
+      passwordHash: password,
     },
-    create: { name: "Sade Customer", email: "customer@ajoflow.dev", passwordHash: password, role: "CUSTOMER" }
+    create: {
+      name: "Sade Customer",
+      email: "customer@kreddt.dev",
+      passwordHash: password,
+      role: "CUSTOMER",
+    },
   });
 
   const group = await prisma.group.create({
@@ -57,18 +88,20 @@ async function main() {
       frequency: "MONTHLY",
       startDate: new Date(),
       totalMembers: members.length,
-      adminId: admin.id
-    }
+      adminId: admin.id,
+    },
   });
 
   await Promise.all(
     members.map((m, i) =>
-      prisma.groupMember.create({ data: { groupId: group.id, userId: m.id, payoutOrder: i + 1 } })
-    )
+      prisma.groupMember.create({
+        data: { groupId: group.id, userId: m.id, payoutOrder: i + 1 },
+      }),
+    ),
   );
 
   const product = await prisma.product.create({
-    data: { vendorId: vendor.id, name: "Samsung A15 Phone", price: 120000 }
+    data: { vendorId: vendor.id, name: "Samsung A15 Phone", price: 120000 },
   });
 
   await prisma.installment.create({
@@ -78,11 +111,50 @@ async function main() {
       totalAmount: 120000,
       amountPaid: 0,
       balance: 120000,
-      status: "ACTIVE"
-    }
+      status: "ACTIVE",
+    },
   });
 
-  console.log("Seed complete. Demo login password for all accounts: password123");
+  const templates = [
+    {
+      name: "Small Small",
+      content:
+        "1) Customer agrees to pay on the exact due dates in this plan. 2) A missed payment of more than 7 days may attract a restructuring review. 3) Full ownership transfers after total settlement. 4) Vendor may pause new deliveries until arrears are cleared.",
+    },
+    {
+      name: "Phone Payment",
+      content:
+        "1) Device warranty terms remain under manufacturer policy. 2) Customer must keep device traceable until final payment. 3) Two consecutive missed payments may trigger default status and recovery workflow.",
+    },
+    {
+      name: "Furniture Payment",
+      content:
+        "1) Delivery confirmation starts the installment timeline. 2) Customer accepts item condition at handover. 3) Payment delays beyond 14 days may incur follow-up charges based on agreed terms.",
+    },
+  ];
+
+  for (const template of templates) {
+    await prisma.vendorPolicyTemplate.upsert({
+      where: {
+        vendorId_name: {
+          vendorId: vendor.id,
+          name: template.name,
+        },
+      },
+      update: {
+        content: template.content,
+      },
+      create: {
+        vendorId: vendor.id,
+        name: template.name,
+        content: template.content,
+      },
+    });
+  }
+
+  console.log(
+    "Seed complete. Demo login password for all accounts: password123",
+  );
 }
 
 main()

@@ -13,11 +13,15 @@ export const GET = withErrorHandling(async (req: Request) => {
     where: {
       role: role ? (role as any) : undefined,
       OR: q
-        ? [{ name: { contains: q, mode: "insensitive" } }, { email: { contains: q, mode: "insensitive" } }]
-        : undefined
+        ? [
+            { name: { contains: q, mode: "insensitive" } },
+            { email: { contains: q, mode: "insensitive" } },
+          ]
+        : undefined,
     },
+    orderBy: { createdAt: "desc" },
     select: { id: true, name: true, email: true, role: true },
-    take: 20
+    take: 200,
   });
 
   return ok(users);

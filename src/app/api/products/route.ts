@@ -14,6 +14,29 @@ export const POST = withErrorHandling(async (req: Request) => {
 
 export const GET = withErrorHandling(async () => {
   const session = await requireRole("VENDOR");
+
+  async function attachKinds<T extends { id: string }>(products: T[]) {
+    const packageRows = await prisma.$queryRaw<
+      Array<{ packageProductId: string | null }>
+    >`
+      SELECT "packageProductId"
+      FROM "ProductPackage"
+      WHERE "vendorId" = ${session.sub}
+        AND "packageProductId" IS NOT NULL
+    `;
+
+    const packageIds = new Set(
+      packageRows
+        .map((row) => row.packageProductId)
+        .filter((id): id is string => Boolean(id)),
+    );
+
+    return products.map((product) => ({
+      ...product,
+      kind: packageIds.has(product.id) ? "PACKAGE" : "STANDARD",
+    }));
+  }
+
   try {
     const products = await prisma.product.findMany({
       where: { vendorId: session.sub },
@@ -23,14 +46,15 @@ export const GET = withErrorHandling(async () => {
         name: true,
         price: true,
         createdAt: true,
-        imageUrl: true
-      }
+        imageUrl: true,
+      },
     });
 
-    return ok(products);
+    return ok(await attachKinds(products));
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
-    const missingImageColumn = message.includes("imageUrl") && message.includes("does not exist");
+    const missingImageColumn =
+      message.includes("imageUrl") && message.includes("does not exist");
 
     if (!missingImageColumn) {
       throw error;
@@ -43,15 +67,15 @@ export const GET = withErrorHandling(async () => {
         id: true,
         name: true,
         price: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     const normalized = products.map((product) => ({
       ...product,
-      imageUrl: null
+      imageUrl: null,
     }));
 
-    return ok(normalized);
+    return ok(await attachKinds(normalized));
   }
 });

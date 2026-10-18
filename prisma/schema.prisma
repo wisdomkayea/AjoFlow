@@ -38,6 +38,22 @@ enum InstallmentStatus {
   DEFAULTED
 }
 
+enum WithdrawalStatus {
+  COMPLETED
+  FAILED
+}
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  SYSTEM
+}
+
+enum ProductKind {
+  STANDARD
+  PACKAGE
+}
+
 model User {
   id           String   @id @default(cuid())
   name         String
@@ -55,7 +71,10 @@ model User {
 
   // Vendor relations
   products     Product[]      @relation("VendorProducts")
+  productPackages ProductPackage[] @relation("VendorPackages")
+  policyTemplates VendorPolicyTemplate[] @relation("VendorPolicyTemplates")
   installments Installment[]  @relation("CustomerInstallments")
+  walletWithdrawals WalletWithdrawal[] @relation("VendorWithdrawals")
 
   auditLogs AuditLog[]
 
@@ -130,11 +149,46 @@ model Product {
   name      String
   price     Decimal  @db.Decimal(14, 2)
   imageUrl  String?
+  kind      ProductKind @default(STANDARD)
   createdAt DateTime @default(now())
 
   installments Installment[]
+  packageItems ProductPackageItem[]
+  sourcePackage ProductPackage? @relation("PackageProduct")
 
   @@index([vendorId])
+}
+
+model ProductPackage {
+  id        String   @id @default(cuid())
+  vendorId  String
+  vendor    User     @relation("VendorPackages", fields: [vendorId], references: [id])
+  name      String
+  baseTotal Decimal  @default(0) @db.Decimal(14, 2)
+  discountAmount Decimal @default(0) @db.Decimal(14, 2)
+  finalTotal Decimal @default(0) @db.Decimal(14, 2)
+  packageProductId String? @unique
+  packageProduct Product? @relation("PackageProduct", fields: [packageProductId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items ProductPackageItem[]
+
+  @@index([vendorId])
+  @@unique([vendorId, name])
+}
+
+model ProductPackageItem {
+  id        String         @id @default(cuid())
+  packageId String
+  package   ProductPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+
+  @@unique([packageId, productId])
+  @@index([productId])
+  @@index([packageId])
 }
 
 model Installment {
@@ -147,6 +201,12 @@ model Installment {
   amountPaid  Decimal            @db.Decimal(14, 2) @default(0)
   balance     Decimal            @db.Decimal(14, 2)
   status      InstallmentStatus  @default(ACTIVE)
+  policyTemplateId String?
+  policyTemplate VendorPolicyTemplate? @relation(fields: [policyTemplateId], references: [id], onDelete: SetNull)
+  policyTemplateName String?
+  policyTemplateContent String?
+  policyAppliedAt DateTime?
+  policyAcceptedAt DateTime?
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
 
@@ -154,6 +214,22 @@ model Installment {
 
   @@index([productId])
   @@index([customerId])
+  @@index([policyTemplateId])
+}
+
+model VendorPolicyTemplate {
+  id        String   @id @default(cuid())
+  vendorId  String
+  vendor    User     @relation("VendorPolicyTemplates", fields: [vendorId], references: [id], onDelete: Cascade)
+  name      String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  installments Installment[]
+
+  @@index([vendorId])
+  @@unique([vendorId, name])
 }
 
 model Payment {
@@ -162,8 +238,27 @@ model Payment {
   installment   Installment @relation(fields: [installmentId], references: [id], onDelete: Cascade)
   amount        Decimal     @db.Decimal(14, 2)
   paidAt        DateTime    @default(now())
+  method        PaymentMethod @default(SYSTEM)
+  reference     String?
 
   @@index([installmentId])
+}
+
+/// Money the vendor moves out of their Kreddt wallet to an external bank account.
+/// Wallet balance = lifetime payments received - sum of non-failed withdrawals.
+/// Total revenue (lifetime payments received) is never affected by withdrawals.
+model WalletWithdrawal {
+  id            String           @id @default(cuid())
+  vendorId      String
+  vendor        User             @relation("VendorWithdrawals", fields: [vendorId], references: [id])
+  amount        Decimal          @db.Decimal(14, 2)
+  bankName      String
+  accountNumber String
+  accountName   String?
+  status        WithdrawalStatus @default(COMPLETED)
+  createdAt     DateTime         @default(now())
+
+  @@index([vendorId])
 }
 
 /// Immutable audit trail for all financial actions (contributions, payouts, payments)

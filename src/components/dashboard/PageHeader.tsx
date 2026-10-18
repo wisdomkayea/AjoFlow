@@ -18,7 +18,7 @@ export function PageHeader({
   return (
     <Card
       className={clsx(
-        "relative overflow-hidden border-forest-100/80 bg-[radial-gradient(circle_at_top_right,#f4ead0_0%,#ffffff_38%,#ffffff_100%)] p-6",
+        "relative overflow-hidden p-6",
         className
       )}
     >

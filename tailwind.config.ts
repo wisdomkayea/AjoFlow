@@ -3,6 +3,11 @@ import type { Config } from "tailwindcss";
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
+    fontFamily: {
+      sans: ["Geist"],
+      serif: ["Geist"],
+      mono: ["Geist"]
+    },
     extend: {
       colors: {
         ink: "#0F1B14",
@@ -16,6 +21,15 @@ const config: Config = {
           700: "#1B4A2F",
           900: "#0F2E1D"
         },
+        primary: {
+          50: "#F0FDF4",
+          100: "#DCFCE7",
+          200: "#BBF7D0",
+          500: "#22C55E",
+          600: "#16A34A",
+          700: "#15803D",
+          800: "#166534"
+        },
         gold: {
           200: "#F2E1B0",
           400: "#E0B84E",
@@ -26,9 +40,9 @@ const config: Config = {
         line: "#DCD7C9"
       },
       fontFamily: {
-        display: ["var(--font-display)", "serif"],
-        body: ["var(--font-body)", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"]
+        display: ["Geist"],
+        body: ["Geist"],
+        mono: ["Geist"]
       },
       borderRadius: {
         sm: "6px",

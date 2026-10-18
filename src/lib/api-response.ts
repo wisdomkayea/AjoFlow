@@ -16,7 +16,10 @@ export function ok<T>(data: T, status = 200) {
 }
 
 export function fail(message: string, status = 400, details?: unknown) {
-  return NextResponse.json({ success: false, error: { message, details } }, { status });
+  return NextResponse.json(
+    { success: false, error: { message, details } },
+    { status },
+  );
 }
 
 /**
@@ -24,7 +27,7 @@ export function fail(message: string, status = 400, details?: unknown) {
  * into consistent JSON error responses instead of leaking stack traces.
  */
 export function withErrorHandling(
-  handler: (req: Request, ctx: any) => Promise<NextResponse>
+  handler: (req: Request, ctx: any) => Promise<NextResponse>,
 ) {
   return async (req: Request, ctx: any) => {
     try {
@@ -36,6 +39,23 @@ export function withErrorHandling(
       if (err?.name === "ZodError") {
         return fail("Validation failed", 422, err.issues ?? err.errors);
       }
+
+      if (err?.name === "PrismaClientInitializationError") {
+        console.error("[db_connection_error]", err);
+        return fail(
+          "Database connection unavailable. Please verify DATABASE_URL/DIRECT_URL and try again.",
+          503,
+        );
+      }
+
+      if (err?.code === "P2021" || err?.code === "P2022") {
+        console.error("[db_schema_error]", err);
+        return fail(
+          "Database schema is out of sync. Run Prisma migrations and try again.",
+          500,
+        );
+      }
+
       console.error("[api_error]", err);
       return fail("Internal server error", 500);
     }

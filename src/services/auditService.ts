@@ -8,7 +8,15 @@ import { Prisma } from "@prisma/client";
 export async function logAudit(params: {
   actorId: string;
   action: string;
-  entityType: "Contribution" | "Payout" | "Payment" | "Group" | "Installment" | "Product";
+  entityType:
+    | "Contribution"
+    | "Payout"
+    | "Payment"
+    | "Group"
+    | "Installment"
+    | "Product"
+    | "WalletWithdrawal"
+    | "User";
   entityId: string;
   metadata?: Prisma.InputJsonValue;
 }) {
@@ -18,7 +26,7 @@ export async function logAudit(params: {
       action: params.action,
       entityType: params.entityType,
       entityId: params.entityId,
-      metadata: params.metadata ?? ({} as Prisma.InputJsonObject)
-    }
+      metadata: params.metadata ?? ({} as Prisma.InputJsonObject),
+    },
   });
 }
