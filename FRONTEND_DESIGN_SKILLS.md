@@ -80,7 +80,7 @@ body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
 | Token | Size / Line height | Weight | Use |
 |---|---|---|---|
 | `display` | 32 / 40 | 700 | Wallet balance (₦230,000.00) |
-| `h1` | 30 / 38 | 700 | Page titles ("Customers", "Welcome, WenStudios") |
+| `h1` | 28 / 36 | 700 | Page/component headers (use `text-[28px] font-bold text-gray-900`) |
 | `h2` | 24 / 32 | 600 | Section titles, entity names ("Jesse Leos") |
 | `h3` | 18 / 28 | 600 | Card titles ("Recent Transactions", "All Customers") |
 | `body-lg` | 16 / 24 | 400/500 | Table cell primary text, nav labels |
@@ -91,7 +91,7 @@ body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
 | `stat` | 24 / 28 | 700 | KPI numbers in stat cards (₦600,000 / ₦720,000 / ₦120,000 / 5) |
 
 - Numbers in tables/KPIs: add `font-variant-numeric: tabular-nums;`.
-- Page title + subtitle pattern: `h1` in `gray-900`, subtitle in `gray-500` at `body-lg`.
+- Page title + subtitle pattern: all component/page `h1` headers must use **`text-[28px] font-bold text-gray-900`**; subtitle in `gray-500` at `body-lg`.
 
 ### 2.2 Colors
 
@@ -271,7 +271,8 @@ Inline compact "chip" action (used in table): **"Set Up Plan ●"** — pill, h 
 
 ### 4.6 Data table (Customers list)
 - Container: white card, radius 24, overflow hidden.
-- **Toolbar row** (padding 24/32): title "All Customers" (`h3`) + **count pill** (`primary-100` bg, `primary-700` text, e.g. `16`), search input (flex-1), **Filters** secondary button with filter icon, **Sort by** dropdown.
+- **Toolbar row** (padding 24/32): title "All Customers" (`24px/28px`, 600) + **count pill** (`primary-100` bg, `primary-700` text, e.g. `16`), search input (compact fixed width at desktop), **Filters** secondary button with filter icon, **Sort by** dropdown.
+- Desktop rule: keep title + search + filter + sort on one row (no wrap) at `xl` and above. Search field should be compact (`~280px`) so controls fit on one line.
 - **Header row:** bg `gray-50`, height 56, text `body` `gray-500` 500, bottom border. (Fix typo: column "Acrion" → **"Action"**.)
 - **Body rows:** min-height 72 (96 when two-line product cell), border-bottom `gray-200`, hover `gray-50`, text `body-lg` `gray-900`.
 - **Columns:** Customer (avatar 48px + name 500) · Product (primary line; secondary line `gray-500` e.g. "iphone 12 pro +5") · Installment Plan · Outstanding · Last Payment · Action.
@@ -338,6 +339,57 @@ Use these exact values for the Vendor dashboard hero + KPI + collection + recent
 - Transaction description (`Money transferred...`): **Geist 500, 13px, 20px line-height, 0 tracking**.
 - Transaction meta (`26/07/2026 · 07:00pm · KRD-00999`): **Geist 400, 11px, 16px line-height, 0 tracking**.
 
+### 4.18 Customers screens pixel-lock (reference alignment)
+Use these exact values for the Customers list, Add Customer modal, success banner, and Customer detail pages:
+- Page title (`Customers` on list page): **text-[28px] font-bold text-gray-900**.
+- Customer name title on detail page: **Geist 500, 24px, 28px line-height, 0 tracking**.
+- Page subtitle (`Everyone buying from you on installment`): **Geist 400, 14px, 20px line-height**.
+- Section title (`All Customers`): **Geist 600, 18px, 28px line-height**.
+- Customers toolbar search width: **~280px** desktop fixed width; keep one-row header composition at `xl+`.
+- Table toolbar layout rule (must match Customers): at `xl+`, keep **title + count + search + filters + sort** on a single row; use `flex-nowrap`, search fixed to **~280px**, and keep controls compact (`h-10`, `rounded-[10px]`, `text-sm`).
+- Count pill (`16`): **Geist 600, 12px, 16px line-height**.
+- Table header labels: **Geist 500, 12px, 16px line-height**.
+- Table body primary text (`Olivia Rhye`, product names): **Geist 500, 14px, 20px line-height**.
+- Table body secondary text (`iphone 12 pro + 5`, `No Payments`): **Geist 400, 14px, 20px line-height**.
+- List action link (`View`): **Geist 500, 14px, 20px line-height**, `primary-600`.
+- `Set Up Plan` chip/button: **Geist 500, 14px, 20px line-height**, bg `primary-500`, radius `10px`.
+- Pagination text (`Page 1 of 10`): **Geist 400, 14px, 20px line-height**.
+- Empty-state title (`No Customers added yet`, `No active plan for ...`): **Geist 700, 40px, 48px line-height**.
+- Empty-state helper text: **Geist 400, 14px, 20px line-height**.
+- Modal title (`Add New Customer`, `Record Payment`): **Geist 600, 32px, 40px line-height**.
+- Modal field labels: **Geist 500, 14px, 20px line-height**.
+- Modal input text: **Geist 400, 14px, 20px line-height**.
+- Success banner title (`Customer successfully created`): **Geist 600, 28px, 36px line-height**.
+- Success banner description: **Geist 400, 14px, 20px line-height**.
+- Customer detail stat values: **Geist 700, 24px, 28px line-height**.
+- Active plan product title: **Geist 600, 14px, 20px line-height**.
+- Active plan metadata row: **Geist 400, 12px, 16px line-height**.
+- Recent payments table header: **Geist 600, 11px, 16px line-height**, uppercase tracking-wide.
+- Recent payments table body: **Geist 400/500, 14px, 20px line-height**.
+- Recent payments table must include a **Source** column with values **Manual** / **Auto**, sourced from backend payment `source`.
+
+### 4.19 Products & Packages pixel-lock (reference alignment)
+Use these exact values for products, package lists, and create/detail flows:
+- Page title (`Products`, `Add Products`, `Create Package`): **text-[28px] font-bold text-gray-900**.
+- List card title (`All Products`, `Packages`): **Geist 600, 18px, 28px line-height**.
+- Tab labels (`All Products`, `Packages`): **Geist 500, 14px, 20px line-height**.
+- Table header labels: **Geist 500, 12px, 16px line-height**.
+- Table body primary text: **Geist 500, 14px, 20px line-height**.
+- Table body secondary values (category, prices, status text): **Geist 400, 14px, 20px line-height**.
+- Wizard right-panel section titles (`Product Information`, `Add Products`, `Set Package Price`, `Review Package`): **Geist 600, 32px, 40px line-height**.
+- Wizard step titles (left rail): **Geist 500, 14px, 20px line-height**.
+- Wizard step descriptions: **Geist 400, 12px, 16px line-height**.
+- Success modal title (`Product Added`, `Package Created`): **Geist 600, 32px, 40px line-height**.
+- Success modal subtitle: **Geist 400, 14px, 20px line-height**.
+- Detail page entity title (`Samsung Galaxy A15`, `Sabi Package`): **text-[28px] font-bold text-gray-900**.
+- Detail stat values: **Geist 700, 24px, 28px line-height**.
+
+Packages definition and behavior:
+- A **Package** is a grouped offer containing multiple products sold under one installment plan.
+- Package list and package detail must be first-class screens (not hidden in product-only flows).
+- Package price can match product total or apply a custom price/discount; display both total and customer savings.
+- Package detail must show included products, aggregate stats, installment sales, and activity using the same component scale as product detail.
+
 ### 4.14 Empty state
 - Centered in content area, vertical stack: 160px green illustration → `h2` ("No Customers added yet") → `body-lg gray-500` helper → primary CTA with `+`.
 - Use the same pattern for every empty list (Products, Installments, Payments), changing illustration, copy and CTA.
@@ -397,10 +449,33 @@ List (table) · Empty · Detail. Pending: **Add Customer** flow, **Filters** pan
 - Plan terms preset: "Pay Small Small" shown as a plan name chip.
 
 ### 6.5 Payments
-- **List:** KPI row (Total received, Pending verification, This month). Table: Date · Customer · Plan · Amount · Method · Reference · Status · Receipt. Filters: method, status, date.
+- **List:** KPI row with 4 cards in this exact order: **Received Today**, **Received this Month**, **Total Payment Recoded**, **Total Customers**. Table: Date · Customer · Plan · Amount · Amount Recorded · **Source (Manual / Auto)** · Reference. Filters: method, status, date.
 - **Record Payment (modal):** Customer* (search select) → Plan* (dependent select, shows balance) → Amount* (quick buttons: "Next installment ₦25,000", "Full balance") → Method* (Bank transfer, Cash, POS, Wallet) → Reference → Date → Receipt upload → `Record payment`.
 - **Receipt (drawer, right, 480px):** header with status badge, amount large, details list (key/value rows), uploaded proof image, `Download PDF` + `Share` buttons.
 - **Methods** displayed as `Bank Transfer (GTB #88392)` style: method + reference in parentheses.
+
+#### Payments screen pixel-lock (reference alignment)
+- Page title `Payments`: **text-[28px] font-bold text-gray-900**.
+- Page subtitle `Record money received from a customer.`: **Geist 400, 14px, 20px**.
+- KPI label text: **Geist 600, 14px, 20px**.
+- KPI value text: **Geist 700, 32px, 40px**.
+- Table heading `All Customers`: **Geist 600, 18px, 28px**.
+- Payments table toolbar must follow the **same single-row composition as Customers** at `xl+`: title + count + search + filters + sort in one line with search at ~280px and no wrapping.
+- Table header cells: **Geist 500, 12px, 16px**.
+- Table body primary cell text: **Geist 500, 14px, 20px**.
+- Table body secondary cell text: **Geist 400, 12px, 16px**.
+- Payment source labels must be explicit text values: **Manual** (recorded by staff/vendor) and **Auto** (system reconciliation).
+- Backend contract: every payment row must persist a `source` value on the Payment model (`MANUAL` or `AUTO`) so UI rendering does not rely on method-only inference.
+- Backend contract: `reference` must be a real transaction reference token (for example `KRD-XXXX1234`), never a product name.
+- Table row click target must include the full row and open **Payment Details**.
+- Record transaction breadcrumb (`← Payments / Record a Transaction`): **Geist 600, 11px, 16px**, uppercase.
+- Record card title `Record Customer Payment`: **Geist 700, 32px, 40px**.
+- Record helper copy under title: **Geist 400, 12px, 16px**.
+- Input labels in record card: **Geist 600, 12px, 16px** uppercase for field groups; customer label **14px / 20px**.
+- Amount entry value: **Geist 700, 20px, 28px** with `₦` prefix.
+- Info panel (`Balance`, `Next Payment`, `Payment Duration`) uses `primary-50` background and **14px / 20px** text.
+- Success dialog title `Payment Recorded Successfully`: **Geist 700, 36px, 40px**.
+- Success dialog body copy: **Geist 400, 13px, 20px**.
 
 ### 6.6 Wallet / Withdrawals (extension of Dashboard)
 - Balance card, `Withdraw` primary, bank accounts list (add/remove), transaction history table with type filter (Credit / Withdrawal), downloadable statements.

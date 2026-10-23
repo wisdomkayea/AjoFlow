@@ -49,6 +49,11 @@ enum PaymentMethod {
   SYSTEM
 }
 
+enum PaymentSource {
+  MANUAL
+  AUTO
+}
+
 enum ProductKind {
   STANDARD
   PACKAGE
@@ -239,6 +244,7 @@ model Payment {
   amount        Decimal     @db.Decimal(14, 2)
   paidAt        DateTime    @default(now())
   method        PaymentMethod @default(SYSTEM)
+  source        PaymentSource @default(MANUAL)
   reference     String?
 
   @@index([installmentId])

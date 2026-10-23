@@ -135,6 +135,26 @@ function buildFallbackRepaymentPreview(installment: {
   };
 }
 
+function buildReferenceFromSeed(seed: string, prefix: "KRD" | "AUTO" = "KRD") {
+  return `${prefix}-${seed.replace(/[^0-9a-z]/gi, "").slice(-8).toUpperCase()}`;
+}
+
+function resolvePaymentReference(
+  rawReference: string | undefined,
+  productName: string | undefined,
+  fallbackReference: string,
+) {
+  const reference = rawReference?.trim();
+  if (!reference) return fallbackReference;
+  if (
+    productName &&
+    reference.toLowerCase() === productName.trim().toLowerCase()
+  ) {
+    return fallbackReference;
+  }
+  return reference;
+}
+
 async function withRepaymentPreview<
   T extends { id: string; totalAmount: unknown; createdAt: Date },
 >(installments: T[]) {
@@ -351,15 +371,21 @@ export async function createInstallmentPlan(
     });
 
     if (computedDownPayment > 0) {
+      const downPaymentId = randomUUID();
+      const downPaymentReference = buildReferenceFromSeed(
+        downPaymentId,
+        "AUTO",
+      );
       await tx.$executeRaw`
-        INSERT INTO "Payment" ("id", "installmentId", "amount", "paidAt", "method", "reference")
+        INSERT INTO "Payment" ("id", "installmentId", "amount", "paidAt", "method", "source", "reference")
         VALUES (
-          ${randomUUID()},
+          ${downPaymentId},
           ${created.id},
           ${computedDownPayment},
           NOW(),
           CAST('SYSTEM' AS "PaymentMethod"),
-          ${"Down Payment"}
+          CAST('AUTO' AS "PaymentSource"),
+          ${downPaymentReference}
         )
       `;
     }
@@ -402,6 +428,7 @@ export async function recordPayment(
 ) {
   const installment = await prisma.installment.findUnique({
     where: { id: input.installmentId },
+    include: { product: true },
   });
   if (!installment) throw new ApiError("Installment plan not found", 404);
   const currentBalance = Number(installment.balance);
@@ -454,7 +481,13 @@ export async function recordPayment(
   }
 
   const paymentMethod = (input.method ?? "Cash").toUpperCase();
-  const reference = input.reference?.trim() || installment.id;
+  const paymentId = randomUUID();
+  const fallbackReference = buildReferenceFromSeed(paymentId, "KRD");
+  const reference = resolvePaymentReference(
+    input.reference,
+    installment.product.name,
+    fallbackReference,
+  );
 
   const [payment, updatedInstallment] = await prisma.$transaction(
     async (tx) => {
@@ -464,19 +497,21 @@ export async function recordPayment(
           amount: unknown;
           paidAt: Date;
           method: string;
+          source: string;
           reference: string | null;
         }>
       >`
-        INSERT INTO "Payment" ("id", "installmentId", "amount", "paidAt", "method", "reference")
+        INSERT INTO "Payment" ("id", "installmentId", "amount", "paidAt", "method", "source", "reference")
         VALUES (
-          ${randomUUID()},
+          ${paymentId},
           ${installment.id},
           ${input.amount},
           ${paidAt},
           CAST(${paymentMethod} AS "PaymentMethod"),
+          CAST('MANUAL' AS "PaymentSource"),
           ${reference}
         )
-        RETURNING "id", "amount", "paidAt", "method", "reference"
+        RETURNING "id", "amount", "paidAt", "method", "source", "reference"
       `;
 
       const updated = await tx.installment.update({
@@ -502,6 +537,7 @@ export async function recordPayment(
       amount: input.amount,
       newBalance,
       method: paymentMethod,
+      source: "MANUAL",
       reference,
       paidAt: paidAt.toISOString(),
     },

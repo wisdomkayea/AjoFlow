@@ -269,7 +269,7 @@ export default function VendorHubDashboardPage() {
   return (
     <DashboardShell>
       {(session: SessionUser) => (
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="space-y-0">
             <h1 className="text-[26px] font-bold leading-[48px] text-gray-900">
               Welcome, {session.name}
