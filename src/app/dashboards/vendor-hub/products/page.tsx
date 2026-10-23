@@ -68,7 +68,7 @@ function EmptyProducts({ onAdd }: { onAdd: () => void }) {
         <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-green-100 text-primary-600">
           <CirclePlus className="h-10 w-10" />
         </div>
-        <h2 className="text-[40px] font-bold leading-[48px] text-gray-900">No Products Added</h2>
+        <h2 className="text-[28px] font-bold leading-[48px] text-gray-900">No Products Added</h2>
         <p className="mt-1 text-sm text-gray-500">
           Click on the button to add a new product
         </p>

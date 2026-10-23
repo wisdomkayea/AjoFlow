@@ -463,7 +463,7 @@ function CustomerDetailContent() {
             <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-100 text-gray-500">
               <CalendarDays className="h-10 w-10" />
             </div>
-            <h2 className="text-[40px] font-bold leading-[48px] text-gray-900">
+            <h2 className="text-[28px] font-bold leading-[48px] text-gray-900">
               No active plan for {customer.name}
             </h2>
             <p className="mt-1 text-sm font-normal leading-5 text-gray-500">

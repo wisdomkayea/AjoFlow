@@ -137,7 +137,7 @@ function CreateProductContent() {
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div>
-          <h1 className="text-[40px] font-bold leading-[48px] text-gray-900">Add Products</h1>
+          <h1 className="text-[28px] font-bold leading-[48px] text-gray-900">Add Products</h1>
           <p className="text-sm text-gray-500">Combine products you normally sell together</p>
         </div>
       </div>

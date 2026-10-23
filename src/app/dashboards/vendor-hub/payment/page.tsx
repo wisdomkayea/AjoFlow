@@ -634,7 +634,7 @@ function VendorPaymentContent() {
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-700">
                 <Check className="h-7 w-7" />
               </div>
-              <h3 className="mt-4 text-[40px] font-bold leading-[44px] text-ink">
+              <h3 className="mt-4 text-[28px] font-bold leading-[44px] text-ink">
                 Payment Recorded Successfully
               </h3>
               <p className="mt-2 text-[13px] leading-5 text-ink/55">

@@ -187,7 +187,7 @@ export default function ProductDetailPage() {
           {!hasInstallments ? (
             <div className="flex min-h-[38vh] items-center justify-center">
               <div className="text-center">
-                <h2 className="text-[40px] font-bold leading-[48px] text-gray-900">No Installmental Paments made yet</h2>
+                <h2 className="text-[28px] font-bold leading-[48px] text-gray-900">No Installmental Paments made yet</h2>
                 <p className="text-sm text-gray-500">When a customer makes payments, it will appear here</p>
               </div>
             </div>

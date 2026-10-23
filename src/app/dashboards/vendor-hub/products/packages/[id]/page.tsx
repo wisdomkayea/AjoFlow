@@ -141,7 +141,7 @@ export default function PackageDetailPage() {
 
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h1 className="text-[40px] font-bold leading-[48px] text-gray-900">{detail.name}</h1>
+              <h1 className="text-[28px] font-bold leading-[48px] text-gray-900">{detail.name}</h1>
               <p className="text-sm text-gray-500">Phones & Electronics · SKU:</p>
             </div>
             <div className="flex items-center gap-2">
