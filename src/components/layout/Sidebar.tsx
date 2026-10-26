@@ -19,15 +19,14 @@ import {
   X,
 } from "lucide-react";
 
-
 import { apiFetch } from "@/lib/api-client";
 import { roleHomePath } from "@/lib/role-routes";
+import { clearCachedSession } from "@/lib/session-cache";
 import { Badge } from "@/components/ui/Badge";
 import type { Role } from "@/types";
 import { createClient } from "@/lib/client";
 import KreddtIcon from "../../../assets/icons/Kreddt-icon.svg";
 import Image from "next/image";
-
 
 const NAV: Record<Role, { href: string; label: string; icon: any }[]> = {
   ADMIN: [
@@ -137,6 +136,7 @@ export function Sidebar({ role, name }: { role: Role; name: string }) {
     } catch {
       // Ignore Supabase sign-out failures; the local session cookie has already been cleared.
     }
+    clearCachedSession();
     router.push("/login");
     router.refresh();
   }
@@ -151,14 +151,14 @@ export function Sidebar({ role, name }: { role: Role; name: string }) {
       <div>
         <Image src={KreddtIcon} alt="" width={45} height={45} />
       </div>
-     <div className="flex flex-col items-center ">
-       <span className="font-display text-sm font-semibold text-ink">
-        Kreddt
-      </span>
-      <Badge tone={role === "VENDOR" ? "active" : "neutral"}>
-        {ROLE_LABEL[role]}
-      </Badge>
-     </div>
+      <div className="flex flex-col items-center ">
+        <span className="font-display text-sm font-semibold text-ink">
+          Kreddt
+        </span>
+        <Badge tone={role === "VENDOR" ? "active" : "neutral"}>
+          {ROLE_LABEL[role]}
+        </Badge>
+      </div>
     </Link>
   );
 
@@ -211,12 +211,10 @@ export function Sidebar({ role, name }: { role: Role; name: string }) {
       <header className="fixed inset-x-0 top-0 z-50 border-b border-line/80 bg-white/95 px-4 py-3 backdrop-blur md:hidden">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <Link href={roleHomePath(role)} className="flex items-center gap-2">
-
             <Landmark className="h-5 w-5 text-forest-600" />
             <span className="font-display text-lg font-semibold text-ink">
               Kreddt
             </span>
-            
           </Link>
 
           <button

@@ -14,7 +14,7 @@ export function TopNav({ title, name }: { title: string; name: string }) {
         >
           <Bell className="h-4 w-4" />
         </button>
-        <div className="relative">
+        <div className="relative cursor-pointer">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-sm font-semibold text-primary-600">
             {initial}
           </div>
